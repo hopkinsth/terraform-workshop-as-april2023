@@ -139,7 +139,7 @@ resource "aws_ecs_service" "app" {
   name = local.app_name
 
    cluster = aws_ecs_cluster.app.id
-   launch_type = ["FARGATE"]
+   launch_type = "FARGATE"
 
    task_definition = aws_ecs_task_definition.app.arn
    desired_count = 2
@@ -150,7 +150,7 @@ resource "aws_ecs_service" "app" {
     }
 
     load_balancer {
-      target_group_arn = ""
+      target_group_arn = aws_lb_target_group.app_http.arn
       container_name = "nginx"
       container_port = 80
     } 
@@ -159,24 +159,24 @@ resource "aws_ecs_service" "app" {
 data "aws_subnets" "private" {
   filter {
     name = "vpc-id"
-    value = [var.vpc_id]
+    values = [var.vpc_id]
   }
 
   filter {
     name = "tag:app"
-    value = ["true"]
+    values = ["true"]
   }
 }
 
 data "aws_subnets" "public" {
   filter {
     name = "vpc-id"
-    value = [var.vpc_id]
+    values = [var.vpc_id]
   }
 
   filter {
     name = "tag:dmz"
-    value = ["true"]
+    values = ["true"]
   }
 }
 
@@ -204,12 +204,12 @@ resource "aws_lb_listener" "app_http" {
   protocol = "HTTP"
 
   default_action {
-    target_group_arn = aws_target_group.app_http.arn
+    target_group_arn = aws_lb_target_group.app_http.arn
     type = "forward"
   }
 }
 
-resource "aws_lb_target_group" "name" {
+resource "aws_lb_target_group" "app_http" {
   name = local.app_name 
   port = 80
   protocol = "HTTP"
@@ -224,7 +224,7 @@ resource "aws_lb_target_group" "name" {
 
 resource "aws_security_group" "lb" {
   name = "${local.app_name}-lb" 
-  description = "sg for ${local.app_name}-${var.environment} load balancer"
+  description = "sg for ${local.app_name}-${var.env} load balancer"
   vpc_id = var.vpc_id
 
   lifecycle {
@@ -249,4 +249,13 @@ resource "aws_vpc_security_group_egress_rule" "egress" {
   security_group_id = each.value
   cidr_ipv4 = "0.0.0.0/0"
   ip_protocol = -1
+}
+
+resource "aws_vpc_security_group_ingress_rule" "task_http" {
+  security_group_id = aws_security_group.task.id
+
+  referenced_security_group_id = aws_security_group.lb.id
+  from_port = 80
+  to_port = 80
+  ip_protocol = "tcp"
 }
