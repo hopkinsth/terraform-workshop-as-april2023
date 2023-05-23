@@ -1,6 +1,9 @@
 name: terraform plan
 on: pull_request
 
+permissions:
+  id-token: write
+
 jobs:
   plan:
     name: plan
