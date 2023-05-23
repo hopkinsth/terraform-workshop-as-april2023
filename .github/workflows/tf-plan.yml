@@ -10,7 +10,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
       - name: checkout
         uses: actions/checkout@v3
-      - uses: aws-action/configure-aws-credentials@v2
+      - uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:<account-id>:role/bursting-mackerel-dev-gha
           role-session-name: gha-tf-plan
