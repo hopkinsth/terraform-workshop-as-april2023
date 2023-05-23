@@ -1,0 +1,16 @@
+name: terraform plan
+on: pull_request
+
+jobs:
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    steps:
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: checkout
+        uses: actions/checkout@3
+      - name: run terraform plan
+        run: |
+          terraform init
+          terraform plan
