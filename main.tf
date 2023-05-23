@@ -259,3 +259,7 @@ resource "aws_vpc_security_group_ingress_rule" "task_http" {
   to_port = 80
   ip_protocol = "tcp"
 }
+
+resource "aws_s3_bucket" "test" {
+  bucket = "${local.app_name}-test"
+}
