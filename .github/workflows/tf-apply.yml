@@ -1,0 +1,30 @@
+name: terraform apply
+on:
+  push: 
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - name: setup terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.4.5
+      - name: checkout
+        uses: actions/checkout@v3
+      - uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::104629106545:role/bursting-mackerel-dev-gha
+          role-session-name: gha-tf-plan
+          aws-region: us-east-1
+      - name: run terraform apply
+        run: |
+          terraform init
+          terraform apply
