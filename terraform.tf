@@ -4,7 +4,7 @@ resource "aws_s3_bucket" "state" {
 
 terraform {
   backend "s3" {
-    bucket = "bursting-mackerel-dev-dev-tfstate"
+    bucket = "rv-thopkins-sandbox-tfstate"
     key = "bursting-mackerel-dev.tfstate"
     region = "us-east-1"
   }
