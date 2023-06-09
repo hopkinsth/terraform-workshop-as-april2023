@@ -9,6 +9,10 @@ terraform {
 
 provider "aws" {
   allowed_account_ids = ["104629106545"]
+  /*assume_role {
+    role_arn = "arn:aws:iam::104629106545:role/bursting-mackerel-dev-gha"
+    session_name = "thopkins-gha-test"
+  }*/
 }
 
 resource "random_pet" "base_name" {}

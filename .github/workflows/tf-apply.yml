@@ -1,5 +1,7 @@
-name: terraform plan
-on: pull_request
+name: terraform apply
+on:
+  push: 
+    branches: [main]
 
 permissions:
   id-token: write
@@ -22,7 +24,7 @@ jobs:
           role-to-assume: arn:aws:iam::104629106545:role/bursting-mackerel-dev-gha
           role-session-name: gha-tf-plan
           aws-region: us-east-1
-      - name: run terraform plan
+      - name: run terraform apply
         run: |
           terraform init
-          terraform plan
+          terraform apply
