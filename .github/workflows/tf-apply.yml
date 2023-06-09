@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   plan:
-    name: plan
+    name: terraform apply
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
@@ -27,4 +27,4 @@ jobs:
       - name: run terraform apply
         run: |
           terraform init
-          terraform apply
+          terraform apply -auto-approve
