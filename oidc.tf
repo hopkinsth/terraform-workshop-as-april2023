@@ -15,7 +15,20 @@ data "tls_certificate" "github_token" {
   verify_chain = true
 }
 
+data "aws_ssm_parameter" "admin_role" {
+  name = "/sso-roles/Administrator"
+}
+
 data "aws_iam_policy_document" "github_trust" {
+  statement {
+    effect = "Allow"
+    actions = ["sts:AssumeRole"]
+    principals {
+      type = "AWS"
+      identifiers = [data.aws_ssm_parameter.admin_role.value]
+    }
+  }
+
   statement {
     effect = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -44,26 +57,6 @@ resource "aws_iam_role" "github" {
   assume_role_policy = data.aws_iam_policy_document.github_trust.json
 }
 
-resource "aws_iam_role_policy" "github_state" {
-  name = "tf_state"
-  role = aws_iam_role.github.id
-
-  policy = jsonencode({
-    Statement = [
-      {
-        "Effect" = "Allow"
-        "Action" = [
-          "s3:GetObject",
-          "s3:PutObject",
-        ]
-        "Resource" = [
-          "arn:aws:s3:::rv-thopkins-sandbox-tfstate/bursting-mackerel-dev.tfstate",
-        ]
-      }
-    ]
-  })
-}
-
 resource "aws_iam_role_policy" "github_terraform" {
   name = "tf"
   role = aws_iam_role.github.id
@@ -77,6 +70,10 @@ resource "aws_iam_role_policy" "github_terraform" {
           "ecr:*",
           "ec2:*",
           "iam:*",
+          "s3:*",
+          "elasticloadbalancing:*",
+          "logs:*",
+          "ssm:GetParameter",
         ]
         "Resource" = [
           "*",
