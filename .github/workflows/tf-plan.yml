@@ -9,6 +9,7 @@ jobs:
   plan:
     name: plan
     runs-on: ubuntu-latest
+    timeout-minutes: 4
     steps:
       - name: setup terraform
         uses: hashicorp/setup-terraform@v2
